@@ -10,7 +10,7 @@ class Inversion {
     BigDecimal cantidad
 
     static mapping = {
-        cantidad formula: "SELECT COALESCE(SUM(m.cantidad), 0) from movimiento m where m.inversion_id = id"
+        cantidad formula: "(SELECT COALESCE(SUM(m.cantidad), 0) from movimiento m where m.inversion_id = id)"
     }
 
 

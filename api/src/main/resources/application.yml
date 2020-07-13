@@ -2,12 +2,16 @@ micronaut:
   application:
     name: inversiones
 dataSource:
-  url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-  driverClassName: org.h2.Driver
-  username: sa
-  password: ''
-  pooled: true
-  jmxExport: true
+  url: "jdbc:mysql://localhost:3306/inversiones?autoReconnect=true&useSSL=false"
+  driverClassName: "com.mysql.cj.jdbc.Driver"
+  username: "wc_bluesky_dev"
+  password: "wc_bluesky_dev"
+  #url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+  #driverClassName: org.h2.Driver
+  #username: sa
+  #password: ''
+  #pooled: true
+  #jmxExport: true
 hibernate:
   hbm2ddl:
     auto: update
