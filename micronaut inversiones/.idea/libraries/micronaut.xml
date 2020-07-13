@@ -1,6 +1,13 @@
 <component name="libraryTable">
   <library name="micronaut">
-    <CLASSES />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http/2.0.0/10e3b3630b4eb505f583dfd65ce00c4e900a8884/micronaut-http-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-runtime/2.0.0/f0a5da5c6a094bd22fb3423c90f5d50ac9fe8285/micronaut-runtime-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-validation/2.0.0/cb093ae637eb9a2c150bfa0bc4f890f6ee2cb781/micronaut-validation-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut.groovy/micronaut-hibernate-gorm/2.0.0/8322d00253604a68c391c92cddcf45f82c842e50/micronaut-hibernate-gorm-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut.groovy/micronaut-runtime-groovy/2.0.0/a8c021910a784d93e0e74c512a0255aaed404ee9/micronaut-runtime-groovy-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut.groovy/micronaut-gorm-common/2.0.0/8be8abad0c5b6ef4edaa4012dba2a3ef86eddab1/micronaut-gorm-common-2.0.0.jar!/" />
+    </CLASSES>
     <JAVADOC />
     <SOURCES />
   </library>
