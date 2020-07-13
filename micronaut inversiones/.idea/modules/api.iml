@@ -25,6 +25,17 @@
           <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-runtime/2.0.0/f0a5da5c6a094bd22fb3423c90f5d50ac9fe8285/micronaut-runtime-2.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ideaLibSources/micronaut-runtime-2.0.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http/2.0.0/10e3b3630b4eb505f583dfd65ce00c4e900a8884/micronaut-http-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>

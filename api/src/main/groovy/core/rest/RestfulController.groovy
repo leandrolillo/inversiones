@@ -1,7 +1,6 @@
 package core.rest
 
 
-import groovy.transform.CompileStatic
 import io.micronaut.http.annotation.*
 import io.micronaut.http.*
 
@@ -39,6 +38,10 @@ class RestfulController<T> {
 
     @Post
     HttpResponse insert(@Body T instance) {
+        instance.validate()
+        if(instance.hasErrors()) {
+            return HttpResponseFactory.INSTANCE.status(HttpStatus.UNPROCESSABLE_ENTITY, instance.errors)
+        }
         return HttpResponse.created(instance.save(failOnError: true))
     }
 
@@ -50,6 +53,13 @@ class RestfulController<T> {
 
         if(!instance) {
             return HttpResponse.notFound()
+        }
+
+        //TODO: update instance properties
+
+        instance.validate()
+        if(instance.hasErrors()) {
+            return HttpResponseFactory.INSTANCE.status(HttpStatus.UNPROCESSABLE_ENTITY, instance.errors)
         }
 
         return HttpResponse.ok(instance.save(failOnError: true))
@@ -65,7 +75,9 @@ class RestfulController<T> {
         if(!instance) {
             return HttpResponse.notFound()
         }
-        Instance
 
+        instance.delete(failOnError: true)
+
+        return HttpResponse.ok()
     }
 }
