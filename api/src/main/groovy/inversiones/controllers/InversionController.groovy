@@ -6,7 +6,6 @@ import io.micronaut.http.annotation.*
 import io.micronaut.http.*
 
 import grails.gorm.transactions.Transactional
-import javax.validation.constraints.NotBlank
 
 @CompileStatic
 @Controller("/inversiones")
@@ -19,30 +18,45 @@ class InversionController {
     }
 
     @Get("/{id}")
-    HttpResponse show(String id) {
+    HttpResponse show(Long id) {
         Inversion inversion = Inversion.get(id)
-
-        if(inversion) {
-            return HttpResponse.ok(inversion)
+        if(!inversion) {
+            return HttpResponse.notFound()
         }
 
-        return HttpResponse.notFound()
+        return HttpResponse.ok(inversion)
     }
 
     @Post
     HttpResponse insert(@Body Inversion inversion) {
+        inversion.validate()
+        if(inversion.hasErrors()) {
+            return HttpResponse.badRequest(inversion.errors)
+        }
+
         return HttpResponse.created(inversion.save(failOnError: true))
     }
 
     @Put("/{id}")
-    HttpResponse update(Integer id, @Body Inversion inversion) {
+    HttpResponse update(Long id, @Body Inversion inversion) {
+        inversion = Inversion.get(id)
+        if(!inversion) {
+            return HttpResponse.notFound()
+        }
+
         return HttpResponse.ok(inversion.save(failOnError: true))
 
     }
 
     @Delete("/{id}")
-    HttpResponse delete(Integer id) {
+    HttpResponse delete(Long id) {
+        Inversion inversion = Inversion.get(id)
+        if(!inversion) {
+            return HttpResponse.notFound()
+        }
+        inversion?.delete(saveOnError: true)
 
+        return HttpResponse.ok()
     }
 }
 
