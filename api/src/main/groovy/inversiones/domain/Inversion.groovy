@@ -13,10 +13,9 @@ class Inversion {
         cantidad formula: "(SELECT COALESCE(SUM(m.cantidad), 0) from movimiento m where m.inversion_id = id)"
     }
 
-
-    static searchable = {
-        only = ['nombre', 'categoria', 'cantidad']
-    }
+//    static searchable = {
+//        only = ['nombre', 'categoria', 'cantidad']
+//    }
 
 //    BigDecimal getPrecioUnitario() {
 //        Movimiento ultimoMovimiento = Movimiento.findByInversion(this, [sort: "fecha", order:"desc"])

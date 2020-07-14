@@ -1,13 +1,21 @@
 package core.rest
 
-
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.http.annotation.*
 import io.micronaut.http.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import grails.gorm.transactions.Transactional
+import javax.inject.Inject
+
 
 @Transactional
 class RestfulController<T> {
+    private static final Logger log = LoggerFactory.getLogger(RestfulController.class)
+
+    @Inject
+    ObjectMapper objectMapper
 
     Class<T> resource
 
@@ -17,8 +25,15 @@ class RestfulController<T> {
 
 
     @Get("/")
-    HttpResponse index() {
-        return HttpResponse.ok(resource.list())
+    HttpResponse index(HttpRequest request) {
+        Map pagingOptions = [
+                offset : request?.parameters?.getFirst("offset").orElse(null) as Long,
+                max: request?.parameters?.getFirst("max").orElse(null) as Long,
+                order: request?.parameters?.getFirst("order").orElse(null),
+                sort: request?.parameters?.getFirst("sort").orElse(null)
+        ]
+
+        return HttpResponse.ok(resource.list(pagingOptions))
     }
 
 
@@ -48,12 +63,14 @@ class RestfulController<T> {
 
 
     @Put("/{id}")
-    HttpResponse update(Long id, @Body T instance) {
-        instance = resource.get(id)
+    HttpResponse update(Long id, @Body String instanceJson) {
+        T instance = resource.get(id)
 
         if(!instance) {
             return HttpResponse.notFound()
         }
+
+        instance = objectMapper.readerForUpdating(instance).readValue(instanceJson, resource)
 
         //TODO: update instance properties
 
