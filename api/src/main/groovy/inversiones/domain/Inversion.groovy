@@ -9,6 +9,10 @@ class Inversion {
 
     BigDecimal cantidad
 
+    static constraints = {
+        nombre unique: "categoria"
+    }
+
     static mapping = {
         cantidad formula: "(SELECT COALESCE(SUM(m.cantidad), 0) from movimiento m where m.inversion_id = id)"
     }

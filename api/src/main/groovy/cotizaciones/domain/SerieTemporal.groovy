@@ -8,24 +8,27 @@ import grails.gorm.annotation.Entity
  */
 class SerieTemporal {
     String nombre
+    String codigo
 
     static constraints = {
+        nombre unique: true
+        codigo unique: true
     }
 
-    List<Historico> getHistoricos() {
-        return Historico.findAllBySerieTemporal(this)
-    }
-
-    BigDecimal precioAl(Date fecha) {
-        if(fecha) {
-            return Historico.createCriteria().get {
-                eq("serieTemporal.id", id)
-                lte("fecha", fecha)
-                order("fecha", "desc")
-                maxResults(1)
-            }?.valor
-        }
-
-        return BigDecimal.ZERO
-    }
+//    List<Historico> getHistoricos() {
+//        return Historico.findAllBySerieTemporal(this)
+//    }
+//
+//    BigDecimal precioAl(Date fecha) {
+//        if(fecha) {
+//            return Historico.createCriteria().get {
+//                eq("serieTemporal.id", id)
+//                lte("fecha", fecha)
+//                order("fecha", "desc")
+//                maxResults(1)
+//            }?.valor
+//        }
+//
+//        return BigDecimal.ZERO
+//    }
 }
