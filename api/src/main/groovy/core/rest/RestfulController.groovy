@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory
 
 import grails.gorm.transactions.Transactional
 import javax.inject.Inject
+import org.hibernate.Criteria
+import org.hibernate.criterion.*
 
 
 @Transactional
@@ -26,14 +28,46 @@ class RestfulController<T> {
 
     @Get("/")
     HttpResponse index(HttpRequest request) {
-        Map pagingOptions = [
-                offset : request?.parameters?.getFirst("offset").orElse(null) as Long,
-                max: request?.parameters?.getFirst("max").orElse(null) as Long,
+        Map paggingOptions = [
+                offset : request?.parameters?.getFirst("offset").orElse(null),
+                max: request?.parameters?.getFirst("max").orElse(null),
                 order: request?.parameters?.getFirst("order").orElse(null),
                 sort: request?.parameters?.getFirst("sort").orElse(null)
         ]
 
-        return HttpResponse.ok(resource.list(pagingOptions))
+        List projections = request?.parameters?.getFirst("projections").orElse("")?.split(",")
+        List sort = request?.parameters?.getAll("sort")
+        List order = request?.parameters?.getAll("order")
+
+        resource.withSession { session ->
+            Criteria criteria = session.createCriteria(resource)
+
+            if(paggingOptions?.offset?.isInteger()) {
+                criteria.setFirstResult(paggingOptions?.offset as Integer)
+            }
+
+            if(paggingOptions?.max?.isInteger()) {
+                criteria.setMaxResults(paggingOptions?.max as Integer)
+            }
+
+            for(int index = 0; index < sort?.size() ?: 0; index++) {
+                String currentOrder = order[index] ?: "asc"
+                switch (currentOrder) {
+                    case "asc":
+                        criteria.addOrder(Order.asc(sort[index]))
+                        break
+                    case "desc":
+                        criteria.addOrder(Order.desc(sort[index]))
+                        break
+                }
+
+            }
+            return HttpResponse.ok(criteria.list())
+        }
+
+
+
+        //return HttpResponse.ok(resource.list(pagingOptions))
     }
 
 
