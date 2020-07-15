@@ -28,26 +28,43 @@ class RestfulController<T> {
 
     @Get("/")
     HttpResponse index(HttpRequest request) {
-        Map paggingOptions = [
+        Map pagination = [
                 offset : request?.parameters?.getFirst("offset").orElse(null),
                 max: request?.parameters?.getFirst("max").orElse(null),
                 order: request?.parameters?.getFirst("order").orElse(null),
                 sort: request?.parameters?.getFirst("sort").orElse(null)
         ]
 
-        List projections = request?.parameters?.getFirst("projections").orElse("")?.split(",")
+        List projections = request?.parameters?.getFirst("projections").orElse(null)?.split("\\,")?.
+                findResults {
+                    it?.trim()
+                }
+
+        Collection excludeFromConstraints =  (pagination.keySet() +  ["projections"])
+        log.debug("excludeFromConstraints $excludeFromConstraints")
+        List constraints = request?.parameters?.findAll {
+            log.info("${it.key} ${it.key.class} ${it.value}")
+
+            !(it.key in excludeFromConstraints)
+        }
+
         List sort = request?.parameters?.getAll("sort")
         List order = request?.parameters?.getAll("order")
 
         resource.withSession { session ->
             Criteria criteria = session.createCriteria(resource)
 
-            if(paggingOptions?.offset?.isInteger()) {
-                criteria.setFirstResult(paggingOptions?.offset as Integer)
+            log.info("Constraints: $constraints")
+            for(def constraint : constraints) {
+                criteria.add(Restrictions.eq(constraint.key, constraint.value?.first()))
             }
 
-            if(paggingOptions?.max?.isInteger()) {
-                criteria.setMaxResults(paggingOptions?.max as Integer)
+            if(pagination?.offset?.isInteger()) {
+                criteria.setFirstResult(pagination?.offset as Integer)
+            }
+
+            if(pagination?.max?.isInteger()) {
+                criteria.setMaxResults(pagination?.max as Integer)
             }
 
             for(int index = 0; index < sort?.size() ?: 0; index++) {
@@ -62,6 +79,17 @@ class RestfulController<T> {
                 }
 
             }
+
+            log.info("Projections: $projections")
+
+            if(projections) {
+                ProjectionList projectionList = Projections.projectionList()
+                for(String projection : projections) {
+                    projectionList.add(Projections.property(projection))
+                }
+                criteria.setProjection(projectionList)
+            }
+
             return HttpResponse.ok(criteria.list())
         }
 
