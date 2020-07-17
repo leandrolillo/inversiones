@@ -1,9 +1,11 @@
 package core.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import core.rest.exceptions.NotFoundException
 import io.micronaut.http.annotation.*
 import io.micronaut.http.*
 import io.micronaut.http.context.ServerRequestContext
+import io.micronaut.http.hateoas.JsonError
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -52,6 +54,72 @@ class RestfulController<T> {
         return HttpResponse.ok(query(projections, constraints, pagination))
     }
 
+
+    @Get("/{id}")
+    HttpResponse show(Long id) {
+        T instance = queryForResource(id)
+        if(!instance) {
+            return HttpResponse.notFound()
+        }
+
+        return HttpResponse.ok(instance)
+    }
+
+
+
+    @Post
+    HttpResponse insert(@Body String instanceJson) {
+        T instance = deserializeResource(resource.newInstance(), instanceJson)
+
+        instance.validate()
+        if(instance.hasErrors()) {
+            return HttpResponseFactory.INSTANCE.status(HttpStatus.UNPROCESSABLE_ENTITY, instance.errors)
+        }
+        return HttpResponse.created(instance.save(failOnError: true))
+    }
+
+
+
+    @Put("/{id}")
+    HttpResponse update(Long id, @Body String instanceJson) {
+        T instance = queryForResource(id)
+        if(!instance) {
+            return HttpResponse.notFound()
+        }
+
+        log.debug("Updating $instance (of class ${instance?.class})")
+        instance = deserializeResource(instance, instanceJson)
+
+        //TODO: update instance properties
+
+        instance.validate()
+        if(instance.hasErrors()) {
+            return HttpResponseFactory.INSTANCE.status(HttpStatus.UNPROCESSABLE_ENTITY, instance.errors)
+        }
+
+        return HttpResponse.ok(instance.save(failOnError: true))
+
+    }
+
+
+
+    @Delete("/{id}")
+    HttpResponse delete(Long id) {
+        T instance = queryForResource(id)
+        if(!instance) {
+            return HttpResponse.notFound()
+        }
+
+        instance.delete(failOnError: true)
+
+        return HttpResponse.ok()
+    }
+
+    @Error(exception = NotFoundException.class)
+    public HttpResponse<JsonError> notFound(NotFoundException notFoundException) {
+        return HttpResponse.notFound(new JsonError(notFoundException.message))
+    }
+
     static String getPathVariable(String pathVariable) {
         HttpRequest request = ServerRequestContext.currentRequest()?.get()
         Optional<UriRouteMatch> uriRouteMatch = request
@@ -59,6 +127,10 @@ class RestfulController<T> {
                 .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class)
 
         return uriRouteMatch.get().getVariableValues().get(pathVariable)
+    }
+
+    T deserializeResource(T initialResource, String json) {
+        return objectMapper.readerForUpdating(initialResource).readValue(json, resource)
     }
 
     T queryForResource(Serializable id) {
@@ -124,65 +196,5 @@ class RestfulController<T> {
         log.debug("result: $result")
 
         return result
-    }
-
-
-
-    @Get("/{id}")
-    HttpResponse show(Long id) {
-        T instance = queryForResource(id)
-        if(!instance) {
-            return HttpResponse.notFound()
-        }
-
-        return HttpResponse.ok(instance)
-    }
-
-
-
-    @Post
-    HttpResponse insert(@Body T instance) {
-        instance.validate()
-        if(instance.hasErrors()) {
-            return HttpResponseFactory.INSTANCE.status(HttpStatus.UNPROCESSABLE_ENTITY, instance.errors)
-        }
-        return HttpResponse.created(instance.save(failOnError: true))
-    }
-
-
-
-    @Put("/{id}")
-    HttpResponse update(Long id, @Body String instanceJson) {
-        T instance = queryForResource(id)
-        if(!instance) {
-            return HttpResponse.notFound()
-        }
-
-        log.debug("Updating $instance (of class ${instance?.class})")
-        instance = objectMapper.readerForUpdating(instance).readValue(instanceJson, resource)
-
-        //TODO: update instance properties
-
-        instance.validate()
-        if(instance.hasErrors()) {
-            return HttpResponseFactory.INSTANCE.status(HttpStatus.UNPROCESSABLE_ENTITY, instance.errors)
-        }
-
-        return HttpResponse.ok(instance.save(failOnError: true))
-
-    }
-
-
-
-    @Delete("/{id}")
-    HttpResponse delete(Long id) {
-        T instance = queryForResource(id)
-        if(!instance) {
-            return HttpResponse.notFound()
-        }
-
-        instance.delete(failOnError: true)
-
-        return HttpResponse.ok()
     }
 }

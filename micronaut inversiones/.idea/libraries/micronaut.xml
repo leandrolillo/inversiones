@@ -19,6 +19,9 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-server-netty/2.0.0/242b48ed520c3266bc79264107f638375494f46e/micronaut-http-server-netty-2.0.0.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-client/2.0.0/8bcdc7143730cdf78fb4660ae401914183d37dcd/micronaut-http-client-2.0.0.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-client-core/2.0.0/285216669df256046bcb89064bff44424c713cea/micronaut-http-client-core-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-router/2.0.0/d70ff383d4ea0b6cd3b9302873d90b7a6b4de93/micronaut-router-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut.beanvalidation/micronaut-hibernate-validator/2.0.1/3117dd9c0c7bcd2ca9a47f3968f50406eab36e5f/micronaut-hibernate-validator-2.0.1.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.reactivex.rxjava3/rxjava/3.0.4/35debb1a7b43bc67e053084f662fa1086b4358aa/rxjava-3.0.4.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
