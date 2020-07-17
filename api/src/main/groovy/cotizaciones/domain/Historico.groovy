@@ -9,8 +9,6 @@ import grails.gorm.annotation.Entity
 class Historico {
     Date fecha
     BigDecimal valor
-    SerieTemporal serieTemporal
 
-    static constraints = {
-    }
+    Cotizacion cotizacion
 }

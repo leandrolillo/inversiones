@@ -6,7 +6,7 @@ import grails.gorm.annotation.Entity
 /**
  * Lleva registro de alguna variable (del dominio de los reales) de interés que tiene un valor que cambia en el tiempo
  */
-class SerieTemporal {
+class Cotizacion {
     String nombre
     String codigo
 

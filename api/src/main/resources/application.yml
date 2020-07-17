@@ -22,3 +22,10 @@ hibernate:
     queries: false
     use_second_level_cache: false
     use_query_cache: false
+logger:
+  levels:
+    core.rest: DEBUG
+io:
+  watch:
+    paths: src/main
+    restart: true

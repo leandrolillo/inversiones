@@ -10,6 +10,9 @@ import grails.gorm.transactions.Transactional
 import javax.inject.Inject
 import org.hibernate.Criteria
 import org.hibernate.criterion.*
+import io.micronaut.http.HttpAttributes
+import io.micronaut.http.HttpRequest
+import io.micronaut.web.router.UriRouteMatch
 
 
 @Transactional
@@ -31,8 +34,8 @@ class RestfulController<T> {
         Map pagination = [
                 offset : request?.parameters?.getFirst("offset").orElse(null),
                 max: request?.parameters?.getFirst("max").orElse(null),
-                order: request?.parameters?.getFirst("order").orElse(null),
-                sort: request?.parameters?.getFirst("sort").orElse(null)
+                order: request?.parameters?.getAll("sort"),
+                sort: request?.parameters?.getAll("order")
         ]
 
         List projections = request?.parameters?.getFirst("projections").orElse(null)?.split("\\,")?.
@@ -41,22 +44,43 @@ class RestfulController<T> {
                 }
 
         Collection excludeFromConstraints =  (pagination.keySet() +  ["projections"])
-        log.debug("excludeFromConstraints $excludeFromConstraints")
-        List constraints = request?.parameters?.findAll {
-            log.info("${it.key} ${it.key.class} ${it.value}")
-
-            !(it.key in excludeFromConstraints)
+        List constraints = request?.parameters?.findResults {
+            !(it.key in excludeFromConstraints) ? [propertyName: it.key, value:it.value?.first()] : null
         }
 
-        List sort = request?.parameters?.getAll("sort")
-        List order = request?.parameters?.getAll("order")
+        return HttpResponse.ok(query(projections, constraints, pagination, request))
+    }
 
-        resource.withSession { session ->
+    static String getPathVariable(HttpRequest request, String  pathVariable) {
+        Optional<UriRouteMatch> uriRouteMatch = request
+                .getAttributes()
+                .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class)
+
+        Long inversionId = uriRouteMatch.get().getVariableValues().inversionId as Long
+    }
+
+    List query(List projections, List constraints, Map pagination, HttpRequest request) {
+        log.debug("Querying $resource with")
+        log.debug("constraints: $constraints")
+        log.debug("projections: $projections")
+        log.debug("pagination: $pagination")
+        List result = resource.withSession { session ->
             Criteria criteria = session.createCriteria(resource)
 
-            log.info("Constraints: $constraints")
-            for(def constraint : constraints) {
-                criteria.add(Restrictions.eq(constraint.key, constraint.value?.first()))
+            for(Map constraint : constraints) {
+                Criteria effectiveCriteria = criteria
+                Class effectiveResource = resource
+                String propertyName = constraint.propertyName
+                while (propertyName?.contains(".")) {
+                    log.debug("Resolving $propertyName of $effectiveResource")
+                    String association = propertyName.substring(0, propertyName.indexOf("."))
+                    propertyName = propertyName.substring(propertyName.indexOf(".") + 1)
+                    effectiveResource = effectiveResource.getDeclaredFields()?.find { it.name == association }?.getType()
+                    log.debug("association: $association - propertyName $propertyName of type $effectiveResource")
+
+                    effectiveCriteria = effectiveCriteria.createCriteria(association)
+                }
+                effectiveCriteria.add(Restrictions.eq(propertyName, constraint.value))
             }
 
             if(pagination?.offset?.isInteger()) {
@@ -67,43 +91,40 @@ class RestfulController<T> {
                 criteria.setMaxResults(pagination?.max as Integer)
             }
 
-            for(int index = 0; index < sort?.size() ?: 0; index++) {
-                String currentOrder = order[index] ?: "asc"
+            for(int index = 0; index < pagination?.sort?.size() ?: 0; index++) {
+                String currentOrder = pagination?.order[index] ?: "asc"
                 switch (currentOrder) {
                     case "asc":
-                        criteria.addOrder(Order.asc(sort[index]))
+                        criteria.addOrder(Order.asc(pagination?.sort[index]))
                         break
                     case "desc":
-                        criteria.addOrder(Order.desc(sort[index]))
+                        criteria.addOrder(Order.desc(pagination?.sort[index]))
                         break
                 }
 
             }
-
-            log.info("Projections: $projections")
 
             if(projections) {
                 ProjectionList projectionList = Projections.projectionList()
                 for(String projection : projections) {
-                    projectionList.add(Projections.property(projection))
+                    projectionList.add(Projections.property(projection), projection)
                 }
                 criteria.setProjection(projectionList)
+                criteria.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
             }
 
-            return HttpResponse.ok(criteria.list())
+            return criteria.list()
         }
+        log.debug("result: $result")
 
-
-
-        //return HttpResponse.ok(resource.list(pagingOptions))
+        return result
     }
 
 
 
     @Get("/{id}")
-    HttpResponse show(Long id) {
-        T instance = resource.get(id)
-
+    HttpResponse show(Long id, HttpRequest request) {
+        T instance = query(null, [[propertyName: "id", value : id]], null, request)
         if(!instance) {
             return HttpResponse.notFound()
         }
@@ -125,9 +146,8 @@ class RestfulController<T> {
 
 
     @Put("/{id}")
-    HttpResponse update(Long id, @Body String instanceJson) {
-        T instance = resource.get(id)
-
+    HttpResponse update(Long id, @Body String instanceJson, HttpRequest request) {
+        T instance = query(null, [[propertyName: "id", value : id]], null, request)
         if(!instance) {
             return HttpResponse.notFound()
         }
@@ -148,9 +168,8 @@ class RestfulController<T> {
 
 
     @Delete("/{id}")
-    HttpResponse delete(Long id) {
-        T instance = resource.get(id)
-
+    HttpResponse delete(Long id, HttpRequest request) {
+        T instance = query(null, [[propertyName: "id", value : id]], null, request)
         if(!instance) {
             return HttpResponse.notFound()
         }

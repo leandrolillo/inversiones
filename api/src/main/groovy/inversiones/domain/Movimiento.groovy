@@ -1,5 +1,9 @@
 package inversiones.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonIdentityReference
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import grails.gorm.annotation.Entity
 
 @Entity
@@ -13,8 +17,11 @@ import grails.gorm.annotation.Entity
 class Movimiento {
     Date fecha
     BigDecimal cantidad
-    Inversion inversion
     String descripcion
+
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    Inversion inversion
 
 //    BigDecimal precio //precio calculado de valor de cuotaparte de la inversion en la fecha
 //    BigDecimal total //total = precio * cantidad
@@ -26,5 +33,15 @@ class Movimiento {
 
     static constraints = {
         descripcion nullable: true
+    }
+
+    public void setInversion(Inversion inversion) {
+        this.inversion = inversion
+    }
+
+
+    @JsonProperty("inversion")
+    public void setInversion(Long id) {
+        this.inversion = Inversion.get(id)
     }
 }
