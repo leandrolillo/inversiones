@@ -18,9 +18,9 @@ class MovimientoController extends RestfulController<Movimiento> {
 
 
     @Override
-    List query(List projections, List constraints, Map pagination, HttpRequest request) {
-        Long inversionId = getPathVariable(request, "inversionId") as Long
+    List query(List projections, List constraints, Map pagination) {
+        Long inversionId = getPathVariable("inversionId") as Long
         constraints.add([propertyName: "inversion.id", value: inversionId])
-        return super.query(projections, constraints, pagination, request)
+        return super.query(projections, constraints, pagination)
     }
 }

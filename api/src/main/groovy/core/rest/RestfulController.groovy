@@ -3,6 +3,7 @@ package core.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.http.annotation.*
 import io.micronaut.http.*
+import io.micronaut.http.context.ServerRequestContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -48,18 +49,23 @@ class RestfulController<T> {
             !(it.key in excludeFromConstraints) ? [propertyName: it.key, value:it.value?.first()] : null
         }
 
-        return HttpResponse.ok(query(projections, constraints, pagination, request))
+        return HttpResponse.ok(query(projections, constraints, pagination))
     }
 
-    static String getPathVariable(HttpRequest request, String  pathVariable) {
+    static String getPathVariable(String pathVariable) {
+        HttpRequest request = ServerRequestContext.currentRequest()?.get()
         Optional<UriRouteMatch> uriRouteMatch = request
                 .getAttributes()
                 .get(HttpAttributes.ROUTE_MATCH.toString(), UriRouteMatch.class)
 
-        Long inversionId = uriRouteMatch.get().getVariableValues().inversionId as Long
+        return uriRouteMatch.get().getVariableValues().get(pathVariable)
     }
 
-    List query(List projections, List constraints, Map pagination, HttpRequest request) {
+    T queryForResource(Serializable id) {
+        return query(null, [[propertyName: "id", value : id]], null)?.find { it }
+    }
+
+    List query(List projections, List constraints, Map pagination) {
         log.debug("Querying $resource with")
         log.debug("constraints: $constraints")
         log.debug("projections: $projections")
@@ -123,8 +129,8 @@ class RestfulController<T> {
 
 
     @Get("/{id}")
-    HttpResponse show(Long id, HttpRequest request) {
-        T instance = query(null, [[propertyName: "id", value : id]], null, request)
+    HttpResponse show(Long id) {
+        T instance = queryForResource(id)
         if(!instance) {
             return HttpResponse.notFound()
         }
@@ -146,8 +152,8 @@ class RestfulController<T> {
 
 
     @Put("/{id}")
-    HttpResponse update(Long id, @Body String instanceJson, HttpRequest request) {
-        T instance = query(null, [[propertyName: "id", value : id]], null, request)?.find { it }
+    HttpResponse update(Long id, @Body String instanceJson) {
+        T instance = queryForResource(id)
         if(!instance) {
             return HttpResponse.notFound()
         }
@@ -169,8 +175,8 @@ class RestfulController<T> {
 
 
     @Delete("/{id}")
-    HttpResponse delete(Long id, HttpRequest request) {
-        T instance = query(null, [[propertyName: "id", value : id]], null, request)?.find { it }
+    HttpResponse delete(Long id) {
+        T instance = queryForResource(id)
         if(!instance) {
             return HttpResponse.notFound()
         }

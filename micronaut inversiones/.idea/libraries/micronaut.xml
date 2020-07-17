@@ -15,6 +15,10 @@
       <root url="file://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut.groovy/micronaut-runtime-groovy/2.0.0/a8c021910a784d93e0e74c512a0255aaed404ee9" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-runtime-osx/2.0.0/1a1f0bb2eab7b500610b6c145fcf316f3f801bff/micronaut-runtime-osx-2.0.0.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-server/2.0.0/cbdbb1f2e6c87d07231c80a996756dad5751bef6/micronaut-http-server-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-websocket/2.0.0/50c2ce54cd8f157c75c5f709c78c9a21ad34c8a7/micronaut-websocket-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-server-netty/2.0.0/242b48ed520c3266bc79264107f638375494f46e/micronaut-http-server-netty-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-client/2.0.0/8bcdc7143730cdf78fb4660ae401914183d37dcd/micronaut-http-client-2.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.micronaut/micronaut-http-client-core/2.0.0/285216669df256046bcb89064bff44424c713cea/micronaut-http-client-core-2.0.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
