@@ -134,7 +134,7 @@ class RestfulController<T> {
     }
 
     T queryForResource(Serializable id) {
-        return query(null, [[propertyName: "id", value : id]], null)?.find { it }
+        return query([], [[propertyName: "id", value : id]], [:])?.find { it }
     }
 
     List query(List projections, List constraints, Map pagination) {
