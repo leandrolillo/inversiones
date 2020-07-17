@@ -1,3 +1,2 @@
 Running:
-
-./gradlew run
+./gradlew run --continuous

@@ -147,11 +147,12 @@ class RestfulController<T> {
 
     @Put("/{id}")
     HttpResponse update(Long id, @Body String instanceJson, HttpRequest request) {
-        T instance = query(null, [[propertyName: "id", value : id]], null, request)
+        T instance = query(null, [[propertyName: "id", value : id]], null, request)?.find { it }
         if(!instance) {
             return HttpResponse.notFound()
         }
 
+        log.debug("Updating $instance (of class ${instance?.class})")
         instance = objectMapper.readerForUpdating(instance).readValue(instanceJson, resource)
 
         //TODO: update instance properties
@@ -169,7 +170,7 @@ class RestfulController<T> {
 
     @Delete("/{id}")
     HttpResponse delete(Long id, HttpRequest request) {
-        T instance = query(null, [[propertyName: "id", value : id]], null, request)
+        T instance = query(null, [[propertyName: "id", value : id]], null, request)?.find { it }
         if(!instance) {
             return HttpResponse.notFound()
         }
