@@ -1,8 +1,8 @@
 'use strict';
 
-describe('myApp.view2 module', function() {
+describe('inversiones.view2 module', function() {
 
-  beforeEach(module('myApp.view2'));
+  beforeEach(module('inversiones.view2'));
 
   describe('view2 controller', function(){
 

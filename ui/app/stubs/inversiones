@@ -1,0 +1,20 @@
+[
+  {
+    "nombre": "Alpha Mega",
+    "categoria": "Renta Variable C",
+    "cantidad": 0.00,
+    "id": 1
+  },
+  {
+    "nombre": "Alpha Mega",
+    "categoria": "Renta Variable B",
+    "cantidad": 0.00,
+    "id": 2
+  },
+  {
+    "nombre": "Alpha Mega 3",
+    "categoria": "Renta Variable A",
+    "cantidad": 0.00,
+    "id": 3
+  }
+]

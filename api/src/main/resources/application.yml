@@ -1,6 +1,9 @@
 micronaut:
   application:
     name: inversiones
+  server:
+    cors:
+      enabled: true
 dataSource:
   url: "jdbc:mysql://localhost:3306/inversiones?autoReconnect=true&useSSL=false"
   driverClassName: "com.mysql.cj.jdbc.Driver"
