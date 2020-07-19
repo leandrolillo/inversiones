@@ -28,7 +28,7 @@ dependencies {
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
     implementation("io.micronaut.groovy:micronaut-hibernate-gorm")
-    implementation("io.reactivex.rxjava3:rxjava:3.0.4")
+    // implementation("io.reactivex.rxjava3:rxjava:3.0.4")
     developmentOnly("io.micronaut:micronaut-runtime-osx:$micronautVersion")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.h2database:h2")

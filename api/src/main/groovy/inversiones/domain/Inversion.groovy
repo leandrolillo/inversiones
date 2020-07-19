@@ -6,6 +6,7 @@ import grails.gorm.annotation.Entity
 class Inversion {
     String nombre
     String categoria
+    String codigo
 
     BigDecimal cantidad
 

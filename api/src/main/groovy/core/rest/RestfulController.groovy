@@ -3,7 +3,7 @@ package core.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import core.rest.exceptions.NotFoundException
 import core.rest.exceptions.ValidationJsonError
-import core.rest.query.QueryUtil
+import core.query.QueryUtil
 import io.micronaut.context.MessageSource
 import io.micronaut.http.annotation.*
 import io.micronaut.http.*
@@ -21,8 +21,8 @@ import io.micronaut.web.router.UriRouteMatch
 import org.grails.datastore.mapping.validation.ValidationException
 
 
-@Transactional
-class RestfulController<T> {
+@Transactional(readOnly = true)
+class RestfulController<T> implements RestfulOperations<T> {
     private static final Logger log = LoggerFactory.getLogger(RestfulController.class)
     QueryUtil<T> queryUtil
 
@@ -40,22 +40,22 @@ class RestfulController<T> {
     }
 
 
-    @Get("/")
-    List<T> index(HttpRequest request) {
+    @Get("/{?queryParams*}")
+    List<T> list(Map queryParams) {
         Map pagination = [
-                offset : request?.parameters?.getFirst("offset").orElse(null),
-                max: request?.parameters?.getFirst("max").orElse(null),
-                order: request?.parameters?.getAll("sort"),
-                sort: request?.parameters?.getAll("order")
+                offset : queryParams?.offset?.find { it },
+                max: queryParams?.max?.find { it },
+                order: queryParams?.order,
+                sort: queryParams?.sort
         ]
 
-        List projections = request?.parameters?.getFirst("projections").orElse(null)?.split("\\,")?.
+        List projections = queryParams?.projections?.split("\\,")?.
                 findResults {
                     it?.trim()
                 }
 
         Collection excludeFromConstraints =  (pagination.keySet() +  ["projections"])
-        List constraints = request?.parameters?.findResults {
+        List constraints = queryParams?.findResults {
             !(it.key in excludeFromConstraints) ? [propertyName: it.key, value:it.value?.first()] : null
         }
 
@@ -72,6 +72,7 @@ class RestfulController<T> {
 
 
 
+    @Transactional
     @Post
     T insert(@Body String instanceJson) {
         T instance = deserializeResource(resource.newInstance(), instanceJson)
@@ -79,7 +80,7 @@ class RestfulController<T> {
     }
 
 
-
+    @Transactional
     @Put("/{id}")
     T update(Long id, @Body String instanceJson) {
         T instance = queryForResource(id)
@@ -93,7 +94,7 @@ class RestfulController<T> {
     }
 
 
-
+    @Transactional
     @Delete("/{id}")
     T delete(Long id) {
         T instance = queryForResource(id)
@@ -115,7 +116,7 @@ class RestfulController<T> {
     public HttpResponse<JsonError> validationException(HttpRequest request, ValidationException validationException)
     {
         ValidationJsonError error = new ValidationJsonError(validationException, messageSource,
-                request.getLocale().orElse(Locale.forLanguageTag("en-us")))
+                request.getLocale().orElse(Locale.default))
         error.link(Link.SELF, Link.of(request.getUri()))
         return HttpResponse.badRequest(error)
     }

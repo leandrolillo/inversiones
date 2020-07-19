@@ -1,5 +1,6 @@
 package cotizaciones.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import grails.gorm.annotation.Entity
 
 @Entity
@@ -10,5 +11,6 @@ class Historico {
     Date fecha
     BigDecimal valor
 
+    @JsonIgnore
     Cotizacion cotizacion
 }

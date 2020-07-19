@@ -1,4 +1,4 @@
-package core.rest.query
+package core.query
 
 import org.hibernate.Criteria
 import org.hibernate.criterion.*
@@ -20,10 +20,7 @@ class QueryUtil<T> {
         constraints = constraints ?: []
         pagination = pagination ?: [:]
 
-        log.debug("Querying $resource with")
-        log.debug("constraints: $constraints")
-        log.debug("projections: $projections")
-        log.debug("pagination: $pagination")
+        log.debug("Querying $resource with constraints: $constraints, projections: $projections and pagination: $pagination")
         List result = resource.withSession { session ->
             Criteria criteria = session.createCriteria(resource)
 

@@ -25,6 +25,11 @@ hibernate:
 logger:
   levels:
     core.rest: DEBUG
+    agregaciones.controllers: DEBUG
+    inversiones.controllers: DEBUG
+    cotizaciones.controllers: DEBUG
+    inversiones.services: DEBUG
+    #core.query: DEBUG
 io:
   watch:
     paths: src/main

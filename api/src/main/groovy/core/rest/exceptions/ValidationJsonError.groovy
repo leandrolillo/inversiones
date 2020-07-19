@@ -17,6 +17,7 @@ class ValidationJsonError extends JsonError {
 
     ValidationJsonError(ValidationException validationException, MessageSource messageSource, Locale locale) {
         super(validationException.errors?.globalErrors?.toString() ?: "validation errors")
+        locale = locale ?: Locale.default
         this.fieldErrors = []
 
         for(FieldError fieldError: validationException?.errors?.fieldErrors) {
