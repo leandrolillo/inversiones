@@ -3,6 +3,7 @@ package inversiones.services
 import agregaciones.clients.CotizacionesClient
 import inversiones.domain.Inversion
 import inversiones.domain.Movimiento
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.annotations.NonNull
@@ -24,7 +25,7 @@ class InversionService {
     @Inject
     CotizacionesClient cotizacionesClient
 
-    Single<BigDecimal> getSaldoValorizado(Long id) {
+    Maybe<BigDecimal> getSaldoValorizado(Long id) {
         Inversion inversion = Inversion.get(id)
 
         return cotizacionesClient.cotizacionAl(inversion.codigo, null).map({ cotizacion ->
@@ -33,8 +34,8 @@ class InversionService {
         })
     }
 
-    Single<BigDecimal> getTotalSubscripciones(Long id) {
-        return Single.just(Movimiento.createCriteria().list {
+    Maybe<BigDecimal> getTotalSubscripciones(Long id) {
+        List cotizaciones = Movimiento.createCriteria().list {
             resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
             eq("inversion.id", id)
             gte("cantidad", BigDecimal.ZERO)
@@ -45,13 +46,23 @@ class InversionService {
                 property("cantidad", "cantidad")
                 property("fecha", "fecha")
             }
-        }?.sum {
-            (it.cantidad ?: BigDecimal.ZERO) * cotizacionesClient.cotizacionAl(it.codigo, it.fecha).blockingGet()
-        } ?: BigDecimal.ZERO)
+        }?.collect {
+            cotizacionesClient.cotizacionAl(it.codigo, it.fecha).map { cotizacion -> (it.cantidad ?: BigDecimal.ZERO) * cotizacion }?.toObservable()
+        }
+
+        if(!cotizaciones) {
+            return Maybe.just(BigDecimal.ZERO)
+        }
+
+        log.info("Cotizaciones $cotizaciones")
+        return Observable.merge(cotizaciones)?.
+                reduce { accumulator, newValue ->
+                    accumulator + newValue
+                }
     }
 
-    Single<BigDecimal> getTotalRescates(Long id) {
-        return Single.just(Movimiento.createCriteria().list {
+    Maybe<BigDecimal> getTotalRescates(Long id) {
+        List cotizaciones = Movimiento.createCriteria().list {
             resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
             eq("inversion.id", id)
             lte("cantidad", BigDecimal.ZERO)
@@ -62,8 +73,18 @@ class InversionService {
                 property("cantidad", "cantidad")
                 property("fecha", "fecha")
             }
-        }?.sum {
-            (it.cantidad?.abs() ?: BigDecimal.ZERO) * cotizacionesClient.cotizacionAl(it.codigo, it.fecha).blockingGet()
-        } ?: BigDecimal.ZERO)
+        }?.collect {
+            cotizacionesClient.cotizacionAl(it.codigo, it.fecha).map { cotizacion -> (it.cantidad ?: BigDecimal.ZERO) * cotizacion }?.toObservable()
+        }
+
+        if(!cotizaciones) {
+            return Maybe.just(BigDecimal.ZERO)
+        }
+
+        log.info("Cotizaciones $cotizaciones")
+        return Observable.merge(cotizaciones)?.
+                reduce { accumulator, newValue ->
+                    accumulator + newValue?.abs()
+                }
     }
 }

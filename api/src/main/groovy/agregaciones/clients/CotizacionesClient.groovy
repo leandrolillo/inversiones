@@ -20,7 +20,7 @@ interface CotizacionesClient {
     Maybe<Map> show(@PathVariable Long id)
 
     @Get("/{codigo}/valor{?fecha}")
-    Single<BigDecimal> cotizacionAl(@PathVariable codigo, @QueryValue @Nullable Date fecha)
+    Maybe<BigDecimal> cotizacionAl(@PathVariable codigo, @QueryValue @Nullable Date fecha)
 
     @Get("/cotizaciones/{cotizacionId}/historico")
     Maybe<List<Map>> listHistoricos(@PathVariable Long cotizacionId, @QueryValue @Nullable Map queryParams)
