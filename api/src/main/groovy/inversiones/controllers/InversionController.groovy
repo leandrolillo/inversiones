@@ -28,17 +28,17 @@ class InversionController extends RestfulController<Inversion> {
     }
 
     @Get("/{id}/saldoValorizado")
-    Maybe<BigDecimal> getSaldoValorizado(@PathVariable Long id) {
+    Single<BigDecimal> getSaldoValorizado(@PathVariable Long id) {
         return inversionService.getSaldoValorizado(id)
     }
 
     @Get("/{id}/subscripciones")
-    Maybe<BigDecimal> getSubscripciones(@PathVariable Long id) {
+    Single<BigDecimal> getSubscripciones(@PathVariable Long id) {
         return inversionService.getTotalSubscripciones(id)
     }
 
     @Get("/{id}/rescates")
-    Maybe<BigDecimal> getRescates(@PathVariable Long id) {
+    Single<BigDecimal> getRescates(@PathVariable Long id) {
         return inversionService.getTotalRescates(id)
 
     }

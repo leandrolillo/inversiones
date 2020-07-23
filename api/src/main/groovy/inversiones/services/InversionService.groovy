@@ -25,7 +25,7 @@ class InversionService {
     @Inject
     CotizacionesClient cotizacionesClient
 
-    Maybe<BigDecimal> getSaldoValorizado(Long id) {
+    Single<BigDecimal> getSaldoValorizado(Long id) {
         Inversion inversion = Inversion.get(id)
 
         return cotizacionesClient.cotizacionAl(inversion.codigo, null).map({ cotizacion ->
@@ -34,7 +34,7 @@ class InversionService {
         })
     }
 
-    Maybe<BigDecimal> getTotalSubscripciones(Long id) {
+    Single<BigDecimal> getTotalSubscripciones(Long id) {
         List cotizaciones = Movimiento.createCriteria().list {
             resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
             eq("inversion.id", id)
@@ -50,18 +50,14 @@ class InversionService {
             cotizacionesClient.cotizacionAl(it.codigo, it.fecha).map { cotizacion -> (it.cantidad ?: BigDecimal.ZERO) * cotizacion }?.toObservable()
         }
 
-        if(!cotizaciones) {
-            return Maybe.just(BigDecimal.ZERO)
-        }
-
         log.info("Cotizaciones $cotizaciones")
         return Observable.merge(cotizaciones)?.
                 reduce { accumulator, newValue ->
                     accumulator + newValue
-                }
+                }.toSingle(BigDecimal.ZERO)
     }
 
-    Maybe<BigDecimal> getTotalRescates(Long id) {
+    Single<BigDecimal> getTotalRescates(Long id) {
         List cotizaciones = Movimiento.createCriteria().list {
             resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
             eq("inversion.id", id)
@@ -85,6 +81,6 @@ class InversionService {
         return Observable.merge(cotizaciones)?.
                 reduce { accumulator, newValue ->
                     accumulator + newValue?.abs()
-                }
+                }.toSingle(BigDecimal.ZERO)
     }
 }

@@ -21,11 +21,12 @@ class CotizacionService {
                 cotizacion {
                     eq("codigo", codigo)
                 }
-            }
 
-            lte("fecha", fecha)
-            order("fecha", "desc")
-            maxResults(1)
-        }?.valor
+
+                lte("fecha", fecha)
+                order("fecha", "desc")
+                maxResults(1)
+            }?.valor
+        }
     }
 }
