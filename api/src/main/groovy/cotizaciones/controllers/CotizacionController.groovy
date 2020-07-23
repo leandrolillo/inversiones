@@ -6,6 +6,8 @@ import cotizaciones.services.CotizacionService
 import io.micronaut.http.annotation.*
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import javax.inject.Inject
 import javax.annotation.Nullable
@@ -15,6 +17,7 @@ import javax.annotation.Nullable
 
 @Controller("/cotizaciones")
 class CotizacionController extends RestfulController<Cotizacion> {
+    private static final Logger log = LoggerFactory.getLogger(CotizacionController.class)
 
     @Inject
     CotizacionService cotizacionService
@@ -29,9 +32,7 @@ class CotizacionController extends RestfulController<Cotizacion> {
 
     @Get("/{codigo}/valor{?fecha}")
     Single<BigDecimal> cotizacionAl(@PathVariable String codigo, @QueryValue @Nullable Date fecha) {
-        Single.fromCallable { cotizacionService.cotizacionAl(codigo, fecha) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.single())
-        return
+        log.debug("Fetching cotización de $codigo al $fecha")
+        return Single.fromCallable { cotizacionService.cotizacionAl(codigo, fecha) }
     }
 }

@@ -29,6 +29,7 @@ class InversionController extends RestfulController<Inversion> {
 
     @Get("/{id}/saldoValorizado")
     Single<BigDecimal> getSaldoValorizado(@PathVariable Long id) {
+        log.debug("Fetching saldo Valorizado for inversion $id")
         return inversionService.getSaldoValorizado(id)
     }
 

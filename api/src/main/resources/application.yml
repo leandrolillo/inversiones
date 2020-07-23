@@ -1,9 +1,26 @@
 micronaut:
   application:
     name: inversiones
+
   server:
     cors:
       enabled: true
+#    netty:
+#      worker:
+#        threads: 2
+#      parent:
+#        threads: 2
+#      childOptions:
+#        autoRead: true
+io:
+  watch:
+    paths: src/main
+    restart: true
+#executors:
+#  io:
+#    type: fixed
+#    nThreads: 1
+
 dataSource:
   url: "jdbc:mysql://localhost:3306/inversiones?autoReconnect=true&useSSL=false"
   driverClassName: "com.mysql.cj.jdbc.Driver"
@@ -25,12 +42,12 @@ hibernate:
 logger:
   levels:
     core.rest: DEBUG
-    agregaciones.controllers: DEBUG
-    inversiones.controllers: DEBUG
-    cotizaciones.controllers: DEBUG
-    inversiones.services: DEBUG
     #core.query: DEBUG
-io:
-  watch:
-    paths: src/main
-    restart: true
+
+    agregaciones.controllers: DEBUG
+
+    cotizaciones.controllers: DEBUG
+    cotizaciones.services: DEBUG
+
+    inversiones.controllers: DEBUG
+    inversiones.services: DEBUG

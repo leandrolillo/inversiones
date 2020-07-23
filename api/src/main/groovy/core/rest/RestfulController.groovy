@@ -10,6 +10,7 @@ import io.micronaut.http.*
 import io.micronaut.http.context.ServerRequestContext
 import io.micronaut.http.hateoas.JsonError
 import io.micronaut.http.hateoas.Link
+import io.micronaut.scheduling.annotation.ExecuteOn
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -64,7 +65,9 @@ class RestfulController<T> implements RestfulOperations<T> {
 
 
     @Get("/{id}")
+    //@ExecuteOn("io")
     T show(Long id) {
+        log.debug("Fetching $resource $id")
         T instance = queryForResource(id)
 
         return instance
