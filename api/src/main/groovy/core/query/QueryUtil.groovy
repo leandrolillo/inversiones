@@ -6,6 +6,12 @@ import org.hibernate.criterion.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+
+
+
+
 class QueryUtil<T> {
     private static final Logger log = LoggerFactory.getLogger(QueryUtil.class)
 
@@ -24,19 +30,28 @@ class QueryUtil<T> {
         List result = resource.withSession { session ->
             Criteria criteria = session.createCriteria(resource)
 
+            DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy")
             for(Map constraint : constraints) {
                 Criteria effectiveCriteria = criteria
-                Class effectiveResource = resource
                 String propertyName = constraint.propertyName
+
+                Class effectiveResource = resource
+
                 while (propertyName?.contains(".")) {
-                    log.debug("Resolving $propertyName of $effectiveResource")
                     String association = propertyName.substring(0, propertyName.indexOf("."))
                     propertyName = propertyName.substring(propertyName.indexOf(".") + 1)
+
                     effectiveResource = effectiveResource.getDeclaredFields()?.find { it.name == association }?.getType()
-                    log.debug("association: $association - propertyName $propertyName of type $effectiveResource")
 
                     effectiveCriteria = effectiveCriteria.createCriteria(association)
                 }
+
+                Class propertyType = effectiveResource.getDeclaredFields()?.find { it.name == propertyName }?.getType()
+                if(propertyType?.isAssignableFrom(Date)) {
+                    constraint.value =  dateFormat.parse(constraint.value)
+                }
+
+                log.trace("$effectiveResource.$propertyName($propertyType)=${constraint.value}(${constraint.value?.class})")
                 effectiveCriteria.add(Restrictions.eq(propertyName, constraint.value))
             }
 

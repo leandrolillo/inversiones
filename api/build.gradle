@@ -34,6 +34,9 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java:8.0")
     runtimeOnly("org.apache.tomcat:tomcat-jdbc")
+    implementation("com.opencsv:opencsv:4.5")
+    implementation("commons-io:commons-io:2.7")
+
     testImplementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
     testImplementation("io.micronaut:micronaut-inject-groovy")
     testImplementation("org.spockframework:spock-core") {

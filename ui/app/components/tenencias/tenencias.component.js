@@ -5,7 +5,7 @@ angular.module('inversiones.tenencias', []).component('tenencias',
         controller: function TenenciasController($http) {
             var self = this;
 
-            $http.get("http://localhost:8080/inversiones").then(
+            $http.get("http://localhost:8080/agregaciones/inversiones").then(
                 function(response) {
                     self.inversiones = response.data
                     console.log(self.inversiones)

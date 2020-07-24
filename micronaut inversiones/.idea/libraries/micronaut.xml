@@ -32,6 +32,7 @@
       <root url="jar://$USER_HOME$/.ideaLibSources/micronaut-inject-2.0.0-sources.jar!/" />
       <root url="jar://$USER_HOME$/.ideaLibSources/micronaut-spring-2.1.0-sources.jar!/" />
       <root url="jar://$USER_HOME$/.ideaLibSources/rxjava-2.2.10-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ideaLibSources/micronaut-http-client-core-2.0.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

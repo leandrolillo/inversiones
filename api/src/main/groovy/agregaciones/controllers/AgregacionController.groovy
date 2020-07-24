@@ -40,12 +40,19 @@ class AgregacionController {
                             error -> inversion.totalSubscripciones = "Could not retrieve property"
                 )
 
+                cotizacionesClient?.cotizacionAl(inversion.codigo, null)?.
+                        subscribe(
+                                value -> inversion.cotizacion = value,
+                                error -> inversion.cotizacion = "Could not retrieve property"
+                        )
+
 //                inversionesClient?.getRescates(inversion.id).
 //                        subscribe(
 //                                value -> inversion.totalRescates = value,
 //                                error -> inversion.totalRescates = "Could not retrieve property"
 //                        )
                 inversion.totalRescates = inversionesClient?.getRescates(inversion.id).blockingGet()
+                inversion.rendimiento = inversion.saldoValorizado - inversion.totalRescates - inversion.totalSubscripciones
             }
         })
 

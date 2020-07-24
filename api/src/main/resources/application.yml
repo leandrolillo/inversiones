@@ -42,7 +42,8 @@ hibernate:
 logger:
   levels:
     core.rest: DEBUG
-    #core.query: DEBUG
+    core.query: DEBUG
+    org.hibernate.orm.deprecation: ERROR
 
     agregaciones.controllers: DEBUG
 

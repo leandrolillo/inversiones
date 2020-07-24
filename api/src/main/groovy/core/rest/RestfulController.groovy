@@ -15,6 +15,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import grails.gorm.transactions.Transactional
+
+import javax.annotation.PostConstruct
 import javax.inject.Inject
 import io.micronaut.http.HttpAttributes
 import io.micronaut.http.HttpRequest
@@ -39,7 +41,6 @@ class RestfulController<T> implements RestfulOperations<T> {
         this.resource = resource
         queryUtil = new QueryUtil<T>(resource)
     }
-
 
     @Get("/{?queryParams*}")
     List<T> list(Map queryParams) {

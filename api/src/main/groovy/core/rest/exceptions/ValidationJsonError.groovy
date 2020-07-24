@@ -29,10 +29,8 @@ class ValidationJsonError extends JsonError {
     }
 
     public static String getMessage(MessageSource messageSource, FieldError fieldError, Locale locale) {
-        log.debug("Resolving message for $fieldError in $locale")
         MessageSource.MessageContext messageContext = MessageSource.MessageContext.of(locale)
         for(String code : fieldError?.codes) {
-            log.debug("Checking errorCode $code")
             Optional<String> message = messageSource.getMessage(code, messageContext)
             if(message.isPresent()) {
                 return message.get()

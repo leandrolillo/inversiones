@@ -4,11 +4,12 @@ import core.rest.RestfulController
 import core.rest.exceptions.NotFoundException
 import cotizaciones.domain.Cotizacion
 import cotizaciones.domain.Historico
+import groovy.util.logging.Slf4j
 import io.micronaut.http.annotation.Controller
 
 
 
-
+@Slf4j
 @Controller("/cotizaciones/{cotizacionId}/historicos")
 class HistoricoController extends RestfulController<Historico> {
 
@@ -18,9 +19,13 @@ class HistoricoController extends RestfulController<Historico> {
 
     @Override
     Historico deserializeResource(Historico initialResource, String json) {
+        log.info("Deserializing $resource")
+
         Long cotizacionId = getPathVariable("cotizacionId") as Long
         Historico historico = super.deserializeResource(initialResource, json)
         historico.cotizacion = Cotizacion.get(cotizacionId)
+
+        log.info("historico.cotizacion = $historico.cotizacion")
 
         if(!historico.cotizacion)
             throw new NotFoundException("Could not find Cotizacion $cotizacionId")

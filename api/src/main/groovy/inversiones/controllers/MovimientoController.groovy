@@ -2,13 +2,14 @@ package inversiones.controllers
 
 import core.rest.exceptions.NotFoundException
 import core.rest.RestfulController
+import groovy.util.logging.Slf4j
 import inversiones.domain.Inversion
 import inversiones.domain.Movimiento
 import io.micronaut.http.annotation.Controller
 
 
 
-
+@Slf4j
 @Controller("/inversiones/{inversionId}/movimientos")
 class MovimientoController extends RestfulController<Movimiento> {
 
